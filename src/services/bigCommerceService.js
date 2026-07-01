@@ -25,7 +25,7 @@ async function fetchBigCommerceCustomer(customerId) {
   if (!customer) {
     throw new Error(`BigCommerce customer not found: ${customerId}`);
   }
-
+  console.log("customer fetched from bigcommerce: ", customer)
   return customer;
 }
 

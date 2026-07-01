@@ -3,7 +3,7 @@ function validateCustomerCreatedPayload(req, res, next) {
     res.status(400).json({ error: 'Expected store/customer/created payload with data.id' });
     return;
   }
-
+  console.log("customer payload is verified")
   next();
 }
 

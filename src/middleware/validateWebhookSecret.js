@@ -10,6 +10,7 @@ function validateWebhookSecret(req, res, next) {
     res.status(401).json({ error: 'Invalid webhook secret' });
     return;
   }
+  console.log("webhook secret is verified")
 
   next();
 }
