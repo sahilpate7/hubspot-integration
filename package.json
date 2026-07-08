@@ -1,7 +1,7 @@
 {
   "name": "hubspot-integration",
   "version": "1.0.0",
-  "description": "Sync BigCommerce customer-created webhooks into HubSpot contacts.",
+  "description": "Sync BigCommerce customer and company webhooks into HubSpot.",
   "main": "index.js",
   "scripts": {
     "start": "nodemon index.js",

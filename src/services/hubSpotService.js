@@ -62,6 +62,70 @@ async function upsertHubSpotContact(properties) {
   });
 }
 
+async function findHubSpotCompany(propertyName, value) {
+  const searchResponse = await hubSpotRequest('/crm/v3/objects/companies/search', {
+    method: 'POST',
+    body: JSON.stringify({
+      filterGroups: [
+        {
+          filters: [
+            {
+              propertyName,
+              operator: 'EQ',
+              value,
+            },
+          ],
+        },
+      ],
+      properties: ['name', 'domain', 'phone', 'city', 'state', 'country'],
+      limit: 1,
+    }),
+  });
+
+  return searchResponse.results && searchResponse.results[0];
+}
+
+async function findExistingHubSpotCompany(properties) {
+  if (properties.bigcommerce_company_id) {
+    const companyByBigCommerceId = await findHubSpotCompany('bigcommerce_company_id', properties.bigcommerce_company_id);
+
+    if (companyByBigCommerceId) {
+      return companyByBigCommerceId;
+    }
+  }
+
+  if (properties.domain) {
+    const companyByDomain = await findHubSpotCompany('domain', properties.domain);
+
+    if (companyByDomain) {
+      return companyByDomain;
+    }
+  }
+
+  return findHubSpotCompany('name', properties.name);
+}
+
+async function upsertHubSpotCompany(properties) {
+  if (!properties.name) {
+    throw new Error('Cannot sync company without a company name');
+  }
+
+  const existingCompany = await findExistingHubSpotCompany(properties);
+
+  if (existingCompany) {
+    return hubSpotRequest(`/crm/v3/objects/companies/${existingCompany.id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ properties }),
+    });
+  }
+
+  return hubSpotRequest('/crm/v3/objects/companies', {
+    method: 'POST',
+    body: JSON.stringify({ properties }),
+  });
+}
+
 module.exports = {
   upsertHubSpotContact,
+  upsertHubSpotCompany,
 };
